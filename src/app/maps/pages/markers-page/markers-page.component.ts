@@ -9,7 +9,7 @@ import {LngLat, Map, Marker} from 'mapbox-gl';
 export class MarkersPageComponent {
 
   map?:Map;
-  currentLngLat: LngLat = new LngLat(-3.2057935727373206, 40.28490808546138); // starting position [lng, lat]
+  currentLngLat: LngLat = new LngLat(-3.69427651766361, 40.41932938269116); // starting position [lng, lat]
   
   @ViewChild('map') divMap?:ElementRef 
 
@@ -34,8 +34,25 @@ export class MarkersPageComponent {
       element: markerHTML
     }).setLngLat( this.currentLngLat).addTo ( this.map );
     */
+  }
 
+  //Metodos
+  createMarker(){
+    if( !this.map ) return;
 
+    const color = '#xxxxxx'.replace(/x/g, y=>(Math.random()*16|0).toString(16)); //Color aleatorio
+    const lngLat = this.map?.getCenter();
+
+    this.addMarker(lngLat,color);
+  }
+
+  addMarker(lngLat:LngLat, color:string){
+    if( !this.map ) return ;
+
+    const marker = new Marker({
+      color: color,
+      draggable:true, //Que se pueda mover el marcador
+    }).setLngLat( lngLat).addTo( this.map );
   }
 
 }

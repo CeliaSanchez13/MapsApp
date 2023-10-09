@@ -10,7 +10,7 @@ export class ZoomRangePageComponent implements AfterViewInit, OnDestroy{
 
   zoom:number = 10;
   map?:Map;
-  currentLngLat: LngLat = new LngLat(-2.985741754839637, 40.5116495902796); // starting position [lng, lat]
+  currentLngLat: LngLat = new LngLat(-3.69427651766361, 40.41932938269116); // starting position [lng, lat]
 
   @ViewChild('map') divMap?:ElementRef 
 
