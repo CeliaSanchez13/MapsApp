@@ -1,15 +1,16 @@
-import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
-import {Map} from 'mapbox-gl';
+import { AfterViewInit, Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
+import {LngLat, Map} from 'mapbox-gl';
 
 @Component({
   selector: 'app-zoom-range-page',
   templateUrl: './zoom-range-page.component.html',
   styleUrls: ['./zoom-range-page.component.css']
 })
-export class ZoomRangePageComponent implements AfterViewInit{
+export class ZoomRangePageComponent implements AfterViewInit, OnDestroy{
 
   zoom:number = 10;
   map?:Map;
+  currentLngLat: LngLat = new LngLat(-2.985741754839637, 40.5116495902796); // starting position [lng, lat]
 
   @ViewChild('map') divMap?:ElementRef 
 
@@ -21,13 +22,19 @@ export class ZoomRangePageComponent implements AfterViewInit{
     this.map = new Map({
       container: this.divMap?.nativeElement, // container ID, asociamos el div donde lo queremos mostrar
       style: 'mapbox://styles/mapbox/streets-v12', // style URL
-      center: [-74.5, 40], // starting position [lng, lat]
+      center: this.currentLngLat, 
       zoom: this.zoom, // starting zoom
       });
 
     this.mapListeners();  
   }
+  
+  ngOnDestroy(): void {
+    //Destruimos todo el mapa
+    this.map?.remove();
+  }
 
+  //Metodos
   mapListeners(){
     if(!this.map) throw 'Mapa no inicializado';
     //Listado de Listeners
@@ -41,6 +48,12 @@ export class ZoomRangePageComponent implements AfterViewInit{
 
       this.map!.zoomTo(18); // Si es mayor...
     });
+
+    this.map.on('move', () => {
+      this.currentLngLat = this.map!.getCenter();
+      const { lng,lat } = this.currentLngLat;
+      console.log({ lng, lat });
+    })
   }
 
   zoomIn(){
