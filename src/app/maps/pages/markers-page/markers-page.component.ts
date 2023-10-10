@@ -68,7 +68,7 @@ export class MarkersPageComponent {
     this.markers.push( { color,marker });
     this.saveToLocalStorage();
 
-    marker.on('dragend', () => this.saveToLocalStorage());
+    marker.on('dragend', () => this.saveToLocalStorage()); //(LISTENER)Cada vez que se mueva el marcador, se actualizará la posicion y se guardará en el localStorage
   }
 
   deleteMarker( index:number ){
@@ -76,14 +76,14 @@ export class MarkersPageComponent {
     this.markers.splice( index, 1 )
   }
 
-  flyTo( marker:Marker){
+  flyTo( marker:Marker){ //Efecto de mover entre marcadores
     this.map?.flyTo({
       zoom:14,
       center: marker.getLngLat()
     });
   }
 
-  saveToLocalStorage(){
+  saveToLocalStorage(){ //Guardar en el localStorage los marcadores
     const plainMarkers: PlainMarker[] = this.markers.map( ({color,marker}) => {
       return {
         color,
@@ -94,7 +94,7 @@ export class MarkersPageComponent {
     localStorage.setItem('plainMarkers', JSON.stringify( plainMarkers ));
   }
 
-  readFromLocalStorage(){
+  readFromLocalStorage(){ //Leer los marcadores guardados
     const plainMarkersString = localStorage.getItem('plainMarkers') ?? '[]'; //Si no existe/viene vacio, le asignamos un array []
     const plainMarkers: PlainMarker[] = JSON.parse( plainMarkersString ); //! Inseguro
 
