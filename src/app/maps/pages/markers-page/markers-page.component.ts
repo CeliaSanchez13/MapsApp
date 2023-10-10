@@ -6,6 +6,11 @@ interface MarkerAndColor{
   marker:Marker
 }
 
+interface PlainMarker{
+  color:string;
+  lngLat:number[]
+}
+
 @Component({
   selector: 'app-markers-page',
   templateUrl: './markers-page.component.html',
@@ -30,6 +35,7 @@ export class MarkersPageComponent {
       zoom: 13, // starting zoom
       });
     
+      this.readFromLocalStorage();
       /* Crear un marcador personalizado
 
     const markerHTML = document.createElement('div');
@@ -60,11 +66,46 @@ export class MarkersPageComponent {
       draggable:true, //Que se pueda mover el marcador
     }).setLngLat( lngLat).addTo( this.map );
     this.markers.push( { color,marker });
+    this.saveToLocalStorage();
+
+    marker.on('dragend', () => this.saveToLocalStorage());
   }
 
   deleteMarker( index:number ){
     this.markers[index].marker.remove(); //Eliminar del mapa
     this.markers.splice( index, 1 )
+  }
+
+  flyTo( marker:Marker){
+    this.map?.flyTo({
+      zoom:14,
+      center: marker.getLngLat()
+    });
+  }
+
+  saveToLocalStorage(){
+    const plainMarkers: PlainMarker[] = this.markers.map( ({color,marker}) => {
+      return {
+        color,
+        lngLat: marker.getLngLat().toArray()
+      }
+    });
+    console.log(plainMarkers);
+    localStorage.setItem('plainMarkers', JSON.stringify( plainMarkers ));
+  }
+
+  readFromLocalStorage(){
+    const plainMarkersString = localStorage.getItem('plainMarkers') ?? '[]'; //Si no existe/viene vacio, le asignamos un array []
+    const plainMarkers: PlainMarker[] = JSON.parse( plainMarkersString ); //! Inseguro
+
+    console.log(plainMarkers);
+
+    plainMarkers.forEach( ({ color, lngLat}) => {
+      const [lng, lat] = lngLat; //Destructurar el arreglo lng = lngLat[0] lat = lngLat[1]
+      const coords = new LngLat(lng,lat);
+
+      this.addMarker(coords, color);
+    })
   }
 
 }
